@@ -1,0 +1,12 @@
+# Runtime (pinned)
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.17
+openai==1.57.0
+chromadb==0.5.23
+pydantic-settings==2.6.1
+
+# Dev / CI
+ruff==0.8.2
+pytest==8.3.4
+httpx==0.28.1

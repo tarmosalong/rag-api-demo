@@ -1,0 +1,1 @@
+"""RAG API demo — core package (samm 1+)."""

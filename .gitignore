@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+data/chroma/
+data/embed_cache.sqlite
+*.db
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
