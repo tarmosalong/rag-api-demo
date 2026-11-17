@@ -10,13 +10,13 @@ from src.xai_client import embed_texts, get_openai_client
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = (
-    "Vasta ainult alloleva konteksti põhjal. "
-    "Kui vastust kontekstist ei leia, ütle selgelt, et sa ei tea."
+    "Answer only using the context below. "
+    "If the answer is not in the context, say clearly that you do not know."
 )
 
 OFFLINE_ANSWER = (
-    "Offline režiim: mock vastus RAG API lepingu testiks. "
-    "Päris vastuse saamiseks lülita RAG_OFFLINE=0 ja käivita ingest."
+    "Offline mode: mock answer for RAG API contract tests. "
+    "For live answers, set RAG_OFFLINE=0 and run ingest."
 )
 
 
@@ -29,7 +29,7 @@ def offline_rag_result() -> RagResult:
                 chunk_id="demo-handbook:0",
                 doc_id="demo-handbook",
                 score=1.0,
-                snippet="Offline režiim: RAG_OFFLINE=1",
+                snippet="Offline mode: RAG_OFFLINE=1",
             )
         ],
         usage=TokenUsage(prompt_tokens=0, completion_tokens=0, total_tokens=0),
@@ -93,7 +93,7 @@ def answer(question: str, settings: Settings | None = None) -> RagResult:
         max_tokens=s.max_output_tokens,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Kontekst:\n{context}\n\nKüsimus: {question}"},
+            {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"},
         ],
     )
 

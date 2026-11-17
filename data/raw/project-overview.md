@@ -1,16 +1,16 @@
-# rag-api-demo — projekti ülevaade
+# rag-api-demo — project overview
 
-See repos on **production slice** RAG API demonstratsioon: FastAPI `/v1`, kohalik Chroma indeks,
-xAI Grok embeddingud ja chat, tsiteeringud ning tokeni/latentsuse mõõdikud.
+This repo is a **production slice** RAG API demo: FastAPI `/v1`, local Chroma index,
+xAI Grok embeddings and chat, citations, and token/latency metrics.
 
-## Eesmärk
+## Goal
 
-Näidata tööandjale versioonitud API-d, testide ja CI põhjat, Dockerit ja kuluteadlikku disaini
-(MAX_OUTPUT_TOKENS, embed-cache ingestil) ilma reasoning-mudelite ja live CI API-kuluta.
+Show employers a versioned API, tests and CI, Docker, and cost-aware design
+(`MAX_OUTPUT_TOKENS`, ingest embed-cache) without reasoning models or live xAI in CI.
 
-## Korpus sellest failist
+## Corpus facts (this file)
 
-- Projekti nimi: **rag-api-demo**
-- Vektorindeks: **Chroma** (`data/chroma/`)
-- Embedding mudel: **grok-embedding-small**
-- Chat mudel: **grok-3-fast-latest** (konfigureeritav `.env` kaudu)
+- Project name: **rag-api-demo**
+- Vector store: **Chroma** (`data/chroma/`)
+- Embedding model: **grok-embedding-small**
+- Chat model: **grok-3-fast-latest** (configurable via `.env`)

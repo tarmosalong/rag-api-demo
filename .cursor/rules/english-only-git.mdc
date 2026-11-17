@@ -1,0 +1,19 @@
+---
+description: All version-controlled repo content must be written in English
+alwaysApply: true
+---
+
+# English-only in Git
+
+Everything committed to this repository must be in **English**, unless an existing file is explicitly marked as a localized exception (none by default).
+
+This includes:
+
+- README, docs, comments aimed at readers, and commit messages on branches we manage
+- Sample / demo corpus under `data/raw/` used for RAG and eval
+- User-visible API strings, prompts, error messages, Makefile echo text, and workflow names
+- Tests: names, docstrings, fixture data, and assertion messages
+
+Do **not** add new Estonian or other non-English text to tracked files. Conversations with the user may stay in their language; **git content stays English**.
+
+When editing existing non-English text in the repo, translate it to English as part of the same change.

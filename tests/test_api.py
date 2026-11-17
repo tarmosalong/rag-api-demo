@@ -22,7 +22,7 @@ def _seed_index() -> None:
     collection = get_collection()
     collection.upsert(
         ids=["demo-handbook:0"],
-        documents=["Demo korpus offline testiks."],
+        documents=["Demo corpus for offline tests."],
         metadatas=[
             {
                 "source": "demo-handbook.txt",
@@ -43,13 +43,13 @@ def test_health_reports_index_not_ready(client: TestClient) -> None:
 
 
 def test_ask_returns_503_when_index_empty(client: TestClient) -> None:
-    response = client.post("/v1/ask", json={"question": "Mis on projekti nimi?"})
+    response = client.post("/v1/ask", json={"question": "What is the project name?"})
     assert response.status_code == 503
 
 
 def test_ask_offline_contract_when_index_ready(client: TestClient) -> None:
     _seed_index()
-    response = client.post("/v1/ask", json={"question": "Mis on projekti nimi?"})
+    response = client.post("/v1/ask", json={"question": "What is the project name?"})
     assert response.status_code == 200
     body = response.json()
     assert "answer" in body

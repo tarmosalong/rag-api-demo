@@ -18,7 +18,7 @@ install:
 	  echo "OK: $(VENV)"; \
 	else \
 	  rm -rf $(VENV); \
-	  echo "venv ei õnnestunud — installin user/site pipiga ($(PYTHON) -m pip)"; \
+	  echo "venv failed — installing with $(PYTHON) -m pip"; \
 	  $(PYTHON) -m pip install -r requirements.txt; \
 	fi
 
@@ -29,19 +29,19 @@ test:
 	RAG_OFFLINE=1 $(PYTEST) -q
 
 dev:
-	@echo "FastAPI (samm 2): uvicorn src.main:app --host 0.0.0.0 --port 8765 --reload"
-	@test -f src/main.py || (echo "src/main.py puudub — tee kõigepealt samm 1–2"; exit 1)
+	@echo "Starting uvicorn src.main:app on :8765"
+	@test -f src/main.py || (echo "src/main.py missing"; exit 1)
 	$(PY) -m uvicorn src.main:app --host 0.0.0.0 --port 8765 --reload
 
 ingest:
 	$(PY) -m src.ingest --rebuild
 
 eval:
-	RAG_OFFLINE=1 $(PY) scripts/run_eval.py --offline 2>/dev/null || echo "eval — samm 6"
+	RAG_OFFLINE=1 $(PY) scripts/run_eval.py --offline 2>/dev/null || echo "eval not implemented yet (step 6)"
 
 eval-live:
-	$(PY) scripts/run_eval.py --live 2>/dev/null || echo "eval-live — samm 6"
+	$(PY) scripts/run_eval.py --live 2>/dev/null || echo "eval-live not implemented yet (step 6)"
 
 docker:
-	@test -f Dockerfile || (echo "Dockerfile puudub — samm 3"; exit 1)
+	@test -f Dockerfile || (echo "Dockerfile missing"; exit 1)
 	docker compose up --build
