@@ -37,10 +37,10 @@ ingest:
 	$(PY) -m src.ingest --rebuild
 
 eval:
-	RAG_OFFLINE=1 $(PY) scripts/run_eval.py --offline 2>/dev/null || echo "eval not implemented yet (step 6)"
+	RAG_OFFLINE=1 $(PY) scripts/run_eval.py --offline
 
 eval-live:
-	$(PY) scripts/run_eval.py --live 2>/dev/null || echo "eval-live not implemented yet (step 6)"
+	$(PY) scripts/run_eval.py --live
 
 docker:
 	@test -f Dockerfile || (echo "Dockerfile missing"; exit 1)

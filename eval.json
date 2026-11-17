@@ -1,0 +1,39 @@
+{
+  "cases": [
+    {
+      "id": "project-name",
+      "question": "What is the project name?",
+      "must_contain": ["rag-api-demo"],
+      "expected_source": "project-overview.md",
+      "offline_must_contain": ["Offline mode"]
+    },
+    {
+      "id": "vector-store",
+      "question": "Which vector store is used?",
+      "must_contain": ["Chroma"],
+      "expected_source": "project-overview.md",
+      "offline_must_contain": ["Offline mode"]
+    },
+    {
+      "id": "ingest-startup",
+      "question": "What is the default for INGEST_ON_STARTUP?",
+      "must_contain": ["false"],
+      "expected_source": "operations-handbook.txt",
+      "offline_must_contain": ["Offline mode"]
+    },
+    {
+      "id": "ask-cost",
+      "question": "How many xAI calls does one ask use?",
+      "must_contain": ["embedding"],
+      "expected_source": "operations-handbook.txt",
+      "offline_must_contain": ["Offline mode"]
+    },
+    {
+      "id": "offline-flag",
+      "question": "How do you run offline tests?",
+      "must_contain": ["RAG_OFFLINE"],
+      "expected_source": "operations-handbook.txt",
+      "offline_must_contain": ["RAG_OFFLINE"]
+    }
+  ]
+}
