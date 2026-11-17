@@ -58,6 +58,8 @@ copy .env.example .env
 
 Open http://127.0.0.1:8765/ . Tests: `$env:RAG_OFFLINE="1"; .\.venv\Scripts\python.exe -m pytest -q`
 
+**Windows + Python 3.12:** PyPI has no `chroma-hnswlib==0.7.6` wheel, so `install.ps1` uses the **0.7.5** wheel then installs `chromadb` without building C++. Alternative: use **Python 3.11** (3.11 has a 0.7.6 wheel) or install [MSVC Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+
 ## Architecture
 
 ```mermaid
