@@ -4,34 +4,93 @@ Versioned **RAG HTTP API**: FastAPI, local Chroma, xAI Grok embeddings + chat, c
 
 [![CI](https://github.com/tarmosalong/rag-api-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/tarmosalong/rag-api-demo/actions/workflows/ci.yml)
 
-## Quick start
+**Stack:** Python 3.12 · FastAPI · Chroma · xAI (OpenAI-compatible) · Docker · GitHub Actions
+
+## Quick demo
 
 ```bash
-cp .env.example .env   # add XAI_API_KEY later; never commit .env
+cp .env.example .env    # set XAI_API_KEY, RAG_OFFLINE=0
+make install && make ingest
+make dev                  # OpenAPI http://127.0.0.1:8765/docs
+```
+
+```bash
+curl -s -X POST http://127.0.0.1:8765/v1/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"What is the project name?"}' | jq
+```
+
+Example response fields: `answer`, `sources[]` (file, score, snippet), `usage`, `latency_ms`, `request_id`.
+
+`POST /v1/upload` is optional; prefer `make ingest` for the committed corpus.
+
+## Setup
+
+```bash
+cp .env.example .env
 make install
-make lint && make test
+make lint && make test    # RAG_OFFLINE=1, no API key
 ```
 
-**Windows (PowerShell):** `copy .env.example .env`, then `python -m venv .venv`, `.\.venv\Scripts\activate`, `pip install -r requirements.txt`. If `make test` fails, use `$env:RAG_OFFLINE="1"; python -m pytest -q`.
+`INGEST_ON_STARTUP=false` by default — run `make ingest` before the first live question (including Docker).
 
-Layout: `src/`, `tests/`, `data/raw/` (sample documents), `scripts/`, `docs/`, `.github/workflows/`.
+**Windows:** see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md); use `copy .env.example .env` and `python -m pytest -q` with `$env:RAG_OFFLINE="1"`.
 
-## Running with xAI
+## Architecture
 
-```bash
-cp .env.example .env   # set XAI_API_KEY, RAG_OFFLINE=0
-make ingest
-make dev               # http://127.0.0.1:8765/docs
+```mermaid
+flowchart LR
+  Client --> FastAPI
+  FastAPI --> RAG
+  RAG --> Chroma
+  RAG --> xAI_embed["xAI embeddings"]
+  RAG --> xAI_chat["xAI chat"]
+  Ingest --> Chroma
+  data_raw["data/raw/"] --> Ingest
 ```
 
-Endpoints: `GET /health`, `GET /v1/stats`, `POST /v1/ask`, `POST /v1/upload` (max 5 MB).
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · HTTP examples: [docs/requests.http](docs/requests.http)
 
-Docker: `make docker` (run ingest on the host or in the container first).
+## Sample questions (corpus)
 
-## Configuration
+| Question | Expected fact | `expected_source` |
+|----------|---------------|-------------------|
+| What is the project name? | `rag-api-demo` | `project-overview.md` |
+| Which vector store is used? | Chroma | `project-overview.md` |
+| Default `INGEST_ON_STARTUP`? | false | `operations-handbook.txt` |
+| Cost per ask? | embedding + chat | `operations-handbook.txt` |
 
-Settings are documented in `.env.example`; secrets live only in local `.env`.
+Run checks: `make eval` (offline contract) or `make eval-live` (retrieval + xAI, costs tokens).
+
+## Cost (xAI)
+
+| Workload | Calls |
+|----------|--------|
+| Ingest new chunk | 1 embedding (batched); cache skips unchanged chunks |
+| Each `/v1/ask` | 1 question embedding + 1 chat (every time) |
+| 100 asks (illustration) | ~100×(embed + chat) — ingest separate |
+| CI | 0 (`RAG_OFFLINE=1`) |
+
+Limits: `MAX_OUTPUT_TOKENS`, `MAX_CONTEXT_CHARS`. Embed cache applies to **ingest chunks only**, not question embeddings.
+
+## Security (local default)
+
+- No auth on `ask` / `upload` for local development.
+- Optional `API_KEY` — not enabled in this repo (phase 2).
+- Upload capped at 5 MB; sync ingest on upload.
+
+## Operations
+
+| Command | Purpose |
+|---------|---------|
+| `make dev` | Uvicorn on port **8765** |
+| `make ingest` | Rebuild index from `data/raw/` |
+| `make docker` | `docker compose up --build` |
+| `make eval` | Offline eval (`eval.json`) |
+| `make eval-live` | Live eval (requires key + ingest) |
+
+If xAI returns **404** for a model name, update `CHAT_MODEL` / `EMBED_MODEL` in `.env` per the current model list.
 
 ## Contributing
 
-Repository content is English only — see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
+English only in git — see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).

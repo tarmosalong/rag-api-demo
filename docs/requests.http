@@ -1,0 +1,25 @@
+@baseUrl = http://127.0.0.1:8765
+
+### Health
+GET {{baseUrl}}/health
+
+### Stats
+GET {{baseUrl}}/v1/stats
+
+### Ask (requires ingest + index; RAG_OFFLINE=0 for live answers)
+POST {{baseUrl}}/v1/ask
+Content-Type: application/json
+
+{
+  "question": "What is the project name?"
+}
+
+### Upload sample (max 5 MB, .txt or .md)
+POST {{baseUrl}}/v1/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="notes.txt"
+
+Sample document for incremental ingest.
+--boundary--
