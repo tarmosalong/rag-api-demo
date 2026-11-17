@@ -34,6 +34,14 @@ def _seed_index() -> None:
     )
 
 
+def test_stats_empty_index(client: TestClient) -> None:
+    response = client.get("/v1/stats")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["chunk_count"] == 0
+    assert body["document_count"] == 0
+
+
 def test_health_reports_index_not_ready(client: TestClient) -> None:
     response = client.get("/health")
     assert response.status_code == 200

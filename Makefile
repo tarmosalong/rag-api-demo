@@ -23,7 +23,7 @@ install:
 	fi
 
 lint:
-	$(RUFF) check src tests
+	$(RUFF) check src tests scripts/run_eval.py
 
 test:
 	RAG_OFFLINE=1 $(PYTEST) -q

@@ -67,6 +67,17 @@ def main() -> int:
     parser.add_argument("--eval-file", type=Path, default=ROOT / "eval.json")
     args = parser.parse_args()
 
+    if args.live:
+        from src.chroma_store import index_ready
+
+        if not index_ready():
+            print("Index is empty. Run: make ingest", file=sys.stderr)
+            return 1
+        key = get_settings().xai_api_key.strip()
+        if not key or "..." in key or len(key) < 24:
+            print("Set a valid XAI_API_KEY in .env for live eval", file=sys.stderr)
+            return 1
+
     cases = _load_cases(args.eval_file)
     passed = 0
     rows: list[tuple[str, str, str]] = []

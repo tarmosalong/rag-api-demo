@@ -91,6 +91,21 @@ Limits: `MAX_OUTPUT_TOKENS`, `MAX_CONTEXT_CHARS`. Embed cache applies to **inges
 
 If xAI returns **404** for a model name, update `CHAT_MODEL` / `EMBED_MODEL` in `.env` per the current model list.
 
+## Manual live eval (GitHub)
+
+Optional workflow [`.github/workflows/rag-live.yml`](.github/workflows/rag-live.yml): **Actions → rag-live → Run workflow** (requires repo secret `XAI_API_KEY`). This is not part of the CI badge and consumes tokens.
+
+## Implementation status
+
+| Step | Deliverable |
+|------|----------------|
+| 0 | Repo layout, deps, sample `data/raw/` |
+| 1–2 | RAG core, `/v1` API, offline tests |
+| 3–4 | Docker, `ci.yml` (offline) |
+| 5–6 | `ARCHITECTURE.md`, `eval.json`, `make eval` |
+
+Phase 2 (not implemented): PDF ingest, rate limiting, GHCR publish.
+
 ## Contributing
 
 English only in git — see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
