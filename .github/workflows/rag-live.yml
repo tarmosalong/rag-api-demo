@@ -1,0 +1,26 @@
+# Manual-only live RAG eval (uses xAI tokens). Not part of the CI badge.
+name: rag-live
+
+on:
+  workflow_dispatch:
+
+env:
+  RAG_OFFLINE: "0"
+
+jobs:
+  eval-live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Ingest corpus
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: python -m src.ingest --rebuild
+      - name: Quality eval
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: python scripts/run_eval.py --live
