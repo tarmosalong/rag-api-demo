@@ -10,6 +10,7 @@ from src.chroma_store import get_chroma_client, get_collection
 from src.chunking import chunk_text
 from src.config import Settings, get_settings
 from src.embed_cache import EmbedCache
+from src.offline_embed import offline_embedding
 from src.xai_client import embed_texts
 
 logger = logging.getLogger(__name__)
@@ -56,6 +57,7 @@ def ingest_file(
     *,
     settings: Settings | None = None,
     rebuild_collection: bool = False,
+    use_offline_embeddings: bool = False,
 ) -> int:
     s = settings or get_settings()
     if path.suffix.lower() not in {".txt", ".md"}:
@@ -90,13 +92,20 @@ def ingest_file(
             missing_texts.append(chunk)
             missing_positions.append(i)
 
-    for batch_start in range(0, len(missing_texts), s.embed_batch_size):
-        batch = missing_texts[batch_start : batch_start + s.embed_batch_size]
-        batch_positions = missing_positions[batch_start : batch_start + len(batch)]
-        vectors = embed_texts(batch, s)
-        for chunk, vector, pos in zip(batch, vectors, batch_positions, strict=True):
+    if use_offline_embeddings:
+        for pos in missing_positions:
+            chunk = chunks[pos]
+            vector = offline_embedding(chunk)
             embeddings[pos] = vector
             cache.put(_content_hash(chunk), vector)
+    else:
+        for batch_start in range(0, len(missing_texts), s.embed_batch_size):
+            batch = missing_texts[batch_start : batch_start + s.embed_batch_size]
+            batch_positions = missing_positions[batch_start : batch_start + len(batch)]
+            vectors = embed_texts(batch, s)
+            for chunk, vector, pos in zip(batch, vectors, batch_positions, strict=True):
+                embeddings[pos] = vector
+                cache.put(_content_hash(chunk), vector)
 
     final_embeddings = [e for e in embeddings if e is not None]
     assert len(final_embeddings) == len(chunks)
@@ -129,13 +138,19 @@ def ingest_directory(
     *,
     settings: Settings | None = None,
     rebuild: bool = False,
+    use_offline_embeddings: bool = False,
 ) -> int:
     s = settings or get_settings()
     directory = raw_dir or s.raw_dir
     paths = sorted(directory.glob("*.md")) + sorted(directory.glob("*.txt"))
     total = 0
     for i, path in enumerate(paths):
-        total += ingest_file(path, settings=s, rebuild_collection=rebuild and i == 0)
+        total += ingest_file(
+            path,
+            settings=s,
+            rebuild_collection=rebuild and i == 0,
+            use_offline_embeddings=use_offline_embeddings,
+        )
     return total
 
 
@@ -144,13 +159,23 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Ingest data/raw into Chroma")
     parser.add_argument("--rebuild", action="store_true", help="drop collection before full ingest")
     parser.add_argument("--file", type=Path, help="ingest single file only")
+    parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="hash-based fake embeddings (no xAI calls)",
+    )
     args = parser.parse_args()
 
     if args.file:
-        count = ingest_file(args.file, rebuild_collection=False)
+        count = ingest_file(
+            args.file,
+            rebuild_collection=False,
+            use_offline_embeddings=args.offline,
+        )
     else:
-        count = ingest_directory(rebuild=args.rebuild)
-    print(f"Ingested {count} chunks")
+        count = ingest_directory(rebuild=args.rebuild, use_offline_embeddings=args.offline)
+    mode = "offline" if args.offline else "live"
+    print(f"Ingested {count} chunks ({mode})")
 
 
 if __name__ == "__main__":

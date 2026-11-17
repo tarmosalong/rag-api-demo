@@ -6,7 +6,21 @@ Versioned **RAG HTTP API**: FastAPI, local Chroma, xAI Grok embeddings + chat, c
 
 **Stack:** Python 3.12 · FastAPI · Chroma · xAI (OpenAI-compatible) · Docker · GitHub Actions
 
-## Quick demo
+## Zero-cost local workflow (no xAI credits)
+
+No API key or billing required:
+
+```bash
+cp .env.example .env   # leave XAI_API_KEY placeholder; set RAG_OFFLINE=1
+make install
+make seed-offline      # Chroma index with hash-based vectors (no network)
+make dev-offline       # http://127.0.0.1:8765/docs
+make test && make eval
+```
+
+`POST /v1/ask` returns a structured **mock** response (`sources`, `usage`, `request_id`). Retrieval quality is not meaningful in offline mode; use live ingest only when you add xAI credits.
+
+## Quick demo (live xAI)
 
 ```bash
 cp .env.example .env    # set XAI_API_KEY, RAG_OFFLINE=0

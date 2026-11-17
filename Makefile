@@ -1,4 +1,4 @@
-.PHONY: install lint test dev ingest eval eval-live docker
+.PHONY: install lint test dev dev-offline ingest seed-offline eval eval-live docker
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -35,6 +35,13 @@ dev:
 
 ingest:
 	$(PY) -m src.ingest --rebuild
+
+seed-offline:
+	$(PY) -m src.ingest --rebuild --offline
+
+dev-offline:
+	@echo "RAG_OFFLINE=1 — mock answers, no xAI cost"
+	RAG_OFFLINE=1 $(PY) -m uvicorn src.main:app --host 0.0.0.0 --port 8765 --reload
 
 eval:
 	RAG_OFFLINE=1 $(PY) scripts/run_eval.py --offline

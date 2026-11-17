@@ -59,6 +59,10 @@ Guards: `MAX_OUTPUT_TOKENS`, `MAX_CONTEXT_CHARS`, `TOP_K` (retrieval breadth).
 
 Question embeddings are **not** cached in this project.
 
+## Offline development
+
+`python -m src.ingest --offline` (or `make seed-offline`) builds Chroma from `data/raw/` using deterministic hash embeddings — **zero xAI calls**. Pair with `RAG_OFFLINE=1` for API responses that satisfy the `AskResponse` contract without chat/embed billing.
+
 ## Configuration
 
 All settings via `.env` (see `.env.example`). Secrets never committed.
