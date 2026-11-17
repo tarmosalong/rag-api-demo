@@ -42,9 +42,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: install.ps1 (Chroma without MSVC)
-        shell: pwsh
-        run: ./scripts/install.ps1
+      - name: install.cmd (execution policy bypass)
+        shell: cmd
+        run: scripts\install.cmd
       - name: pytest
         shell: pwsh
         env:
