@@ -10,7 +10,7 @@ $pyVer = & $pip -c "import sys; print(f'{sys.version_info.major}.{sys.version_in
 
 & $pip -m pip install -U pip
 
-# Base deps (no chromadb — handled below for Windows wheel quirks)
+# Base deps (no chromadb; handled below for Windows wheel quirks)
 $lines = Get-Content "requirements.txt" | Where-Object {
     $_ -notmatch '^\s*$' -and $_ -notmatch '^\s*#' -and $_ -notmatch '^chromadb'
 }
@@ -29,6 +29,8 @@ if ($onWindows -and $pyVer -eq "3.12") {
 } else {
     & $pip -m pip install "chromadb==0.5.23"
 }
+
+& $pip -c "import chromadb, uvicorn, fastapi; print('import smoke OK')"
 
 Write-Host "OK: .venv (Python $pyVer)"
 Write-Host "Start: .\scripts\dev-offline.ps1"
