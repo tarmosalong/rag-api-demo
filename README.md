@@ -14,7 +14,17 @@ make lint && make test # oodatav: All checks passed + 2 passed
 
 Kaustad: `src/`, `tests/`, `data/raw/` (näidiskorpus), `scripts/`, `docs/`, `.github/workflows/`.
 
-Järgmised sammud: RAG tuum (`src/ingest.py`, `src/rag.py`), FastAPI `/v1`, Docker, CI — vt projekti plaani.
+## Live RAG (vajab võtit)
+
+```bash
+cp .env.example .env   # pane päris XAI_API_KEY, RAG_OFFLINE=0
+make ingest
+make dev               # http://127.0.0.1:8765/docs
+```
+
+API: `GET /health`, `GET /v1/stats`, `POST /v1/ask`, `POST /v1/upload` (max 5 MB).
+
+Docker: `make docker` (enne ingest hostis või konteineris).
 
 ## Konfiguratsioon
 

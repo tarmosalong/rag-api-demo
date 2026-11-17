@@ -34,8 +34,7 @@ dev:
 	$(PY) -m uvicorn src.main:app --host 0.0.0.0 --port 8765 --reload
 
 ingest:
-	@echo "RAG ingest (samm 1): python -m src.ingest"
-	$(PY) -m src.ingest --help 2>/dev/null || (echo "src/ingest.py puudub — samm 1"; exit 1)
+	$(PY) -m src.ingest --rebuild
 
 eval:
 	RAG_OFFLINE=1 $(PY) scripts/run_eval.py --offline 2>/dev/null || echo "eval — samm 6"
