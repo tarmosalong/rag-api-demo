@@ -1,0 +1,10 @@
+rag-api-demo — operations handbook (sample corpus)
+
+INGEST_ON_STARTUP defaults to false. Run ingest manually before the first question (make ingest).
+
+Cost per ask: one question embedding plus one chat completion.
+The embed cache applies only to ingest chunks, not repeated question embeddings.
+
+Offline testing: RAG_OFFLINE=1 (pytest and make test).
+
+Default HTTP port: 8765.

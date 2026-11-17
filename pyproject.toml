@@ -1,0 +1,18 @@
+[project]
+name = "rag-api-demo"
+version = "0.1.0"
+description = "Versioned RAG HTTP API (FastAPI, Chroma, xAI Grok)"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
