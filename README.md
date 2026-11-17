@@ -48,7 +48,15 @@ make lint && make test    # RAG_OFFLINE=1, no API key
 
 `INGEST_ON_STARTUP=false` by default — run `make ingest` before the first live question (including Docker).
 
-**Windows:** see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md); use `copy .env.example .env` and `python -m pytest -q` with `$env:RAG_OFFLINE="1"`.
+**Windows (no `make` required):**
+
+```powershell
+copy .env.example .env
+.\scripts\install.ps1
+.\scripts\dev-offline.ps1
+```
+
+Open http://127.0.0.1:8765/ . Tests: `$env:RAG_OFFLINE="1"; .\.venv\Scripts\python.exe -m pytest -q`
 
 ## Architecture
 
