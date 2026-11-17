@@ -9,7 +9,7 @@ from src.chroma_store import index_ready
 from src.config import APP_VERSION, get_settings
 from src.ingest import ingest_directory, ingest_file
 from src.middleware import RequestIdMiddleware
-from src.rag import answer, get_stats, offline_rag_result
+from src.rag import answer, get_stats
 from src.schemas import (
     AskResponse,
     HealthResponse,
@@ -71,16 +71,6 @@ def ask_question(body: QuestionRequest, request: Request) -> AskResponse:
         raise HTTPException(
             status_code=503,
             detail="Index is not ready. Run ingest first (make ingest).",
-        )
-
-    if settings.rag_offline:
-        mock = offline_rag_result()
-        return AskResponse(
-            answer=mock.answer,
-            sources=mock.sources,
-            usage=mock.usage,
-            latency_ms=mock.latency_ms,
-            request_id=_request_id(request),
         )
 
     try:

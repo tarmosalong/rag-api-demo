@@ -51,7 +51,7 @@ def _run_case(case: dict, *, live: bool) -> tuple[bool, str]:
         if forbidden.lower() in result.answer.lower():
             return False, f"forbidden '{forbidden}' in answer"
 
-    if live and case.get("expected_source"):
+    if case.get("expected_source"):
         if not _source_hit(result.sources, case["expected_source"]):
             names = [s.source for s in result.sources]
             return False, f"expected source {case['expected_source']}, got {names}"
