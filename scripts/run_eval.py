@@ -12,7 +12,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from src.chroma_store import index_ready
 from src.config import get_settings
+from src.ingest import ingest_directory
 from src.rag import answer
 
 
@@ -25,6 +27,17 @@ def _source_hit(sources: list, expected: str | None) -> bool:
     if not expected:
         return True
     return any(s.source == expected for s in sources)
+
+
+def _ensure_offline_index() -> None:
+    """Seed Chroma from data/raw when empty (no xAI, fresh checkout / CI)."""
+    os.environ["RAG_OFFLINE"] = "1"
+    get_settings.cache_clear()
+    if index_ready():
+        return
+    count = ingest_directory(rebuild=True, use_offline_embeddings=True)
+    if count <= 0:
+        raise SystemExit("Offline eval: no chunks ingested from data/raw/")
 
 
 def _run_case(case: dict, *, live: bool) -> tuple[bool, str]:
@@ -40,7 +53,10 @@ def _run_case(case: dict, *, live: bool) -> tuple[bool, str]:
     else:
         os.environ["RAG_OFFLINE"] = "1"
         get_settings.cache_clear()
-        result = answer(question)
+        try:
+            result = answer(question)
+        except Exception as exc:
+            return False, f"error: {exc}"
 
     checks = case.get("offline_must_contain" if not live else "must_contain", [])
     for needle in checks:
@@ -67,9 +83,10 @@ def main() -> int:
     parser.add_argument("--eval-file", type=Path, default=ROOT / "eval.json")
     args = parser.parse_args()
 
-    if args.live:
-        from src.chroma_store import index_ready
+    if args.offline:
+        _ensure_offline_index()
 
+    if args.live:
         if not index_ready():
             print("Index is empty. Run: make ingest", file=sys.stderr)
             return 1
