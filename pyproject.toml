@@ -1,7 +1,7 @@
 [project]
 name = "rag-api-demo"
 version = "0.1.0"
-description = "Production-style RAG API demo (FastAPI, Chroma, xAI Grok)"
+description = "Versioned RAG HTTP API (FastAPI, Chroma, xAI Grok)"
 readme = "README.md"
 requires-python = ">=3.11"
 

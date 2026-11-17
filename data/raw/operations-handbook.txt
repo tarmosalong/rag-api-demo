@@ -1,4 +1,4 @@
-rag-api-demo — short handbook (demo corpus)
+rag-api-demo — operations handbook (sample corpus)
 
 INGEST_ON_STARTUP defaults to false. Run ingest manually before the first question (make ingest).
 
@@ -7,4 +7,4 @@ The embed cache applies only to ingest chunks, not repeated question embeddings.
 
 Offline testing: RAG_OFFLINE=1 (pytest and make test).
 
-Demo port: 8765.
+Default HTTP port: 8765.

@@ -21,13 +21,13 @@ def client(tmp_path, monkeypatch):
 def _seed_index() -> None:
     collection = get_collection()
     collection.upsert(
-        ids=["demo-handbook:0"],
-        documents=["Demo corpus for offline tests."],
+        ids=["operations-handbook:0"],
+        documents=["Sample text for offline API tests."],
         metadatas=[
             {
-                "source": "demo-handbook.txt",
-                "chunk_id": "demo-handbook:0",
-                "doc_id": "demo-handbook",
+                "source": "operations-handbook.txt",
+                "chunk_id": "operations-handbook:0",
+                "doc_id": "operations-handbook",
             }
         ],
         embeddings=[[0.01] * 32],

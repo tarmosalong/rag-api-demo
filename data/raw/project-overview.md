@@ -1,11 +1,11 @@
 # rag-api-demo — project overview
 
-This repo is a **production slice** RAG API demo: FastAPI `/v1`, local Chroma index,
+HTTP API for retrieval-augmented generation: FastAPI `/v1`, local Chroma index,
 xAI Grok embeddings and chat, citations, and token/latency metrics.
 
-## Goal
+## Scope
 
-Show employers a versioned API, tests and CI, Docker, and cost-aware design
+Versioned REST surface, tests and CI, container packaging, and cost guardrails
 (`MAX_OUTPUT_TOKENS`, ingest embed-cache) without reasoning models or live xAI in CI.
 
 ## Corpus facts (this file)

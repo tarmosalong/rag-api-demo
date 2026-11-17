@@ -25,9 +25,9 @@ def offline_rag_result() -> RagResult:
         answer=OFFLINE_ANSWER,
         sources=[
             SourceCitation(
-                source="demo-handbook.txt",
-                chunk_id="demo-handbook:0",
-                doc_id="demo-handbook",
+                source="operations-handbook.txt",
+                chunk_id="operations-handbook:0",
+                doc_id="operations-handbook",
                 score=1.0,
                 snippet="Offline mode: RAG_OFFLINE=1",
             )

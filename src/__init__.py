@@ -1,1 +1,1 @@
-"""RAG API demo — core package."""
+"""RAG API application package."""

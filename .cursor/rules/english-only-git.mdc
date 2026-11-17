@@ -10,7 +10,7 @@ Everything committed to this repository must be in **English**, unless an existi
 This includes:
 
 - README, docs, comments aimed at readers, and commit messages on branches we manage
-- Sample / demo corpus under `data/raw/` used for RAG and eval
+- Sample documents under `data/raw/` used for RAG and eval
 - User-visible API strings, prompts, error messages, Makefile echo text, and workflow names
 - Tests: names, docstrings, fixture data, and assertion messages
 
