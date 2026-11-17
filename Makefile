@@ -13,11 +13,13 @@ else
 endif
 
 install:
-	@if $(PYTHON) -m venv --help >/dev/null 2>&1; then \
-	  $(PYTHON) -m venv $(VENV) && $(VENV)/bin/pip install -U pip && $(VENV)/bin/pip install -r requirements.txt; \
+	@if $(PYTHON) -m venv $(VENV) 2>/dev/null && test -x $(VENV)/bin/pip; then \
+	  $(VENV)/bin/pip install -U pip && $(VENV)/bin/pip install -r requirements.txt; \
+	  echo "OK: $(VENV)"; \
 	else \
-	  echo "python3-venv puudub; kasutan: pip install -r requirements.txt"; \
-	  pip install -r requirements.txt; \
+	  rm -rf $(VENV); \
+	  echo "venv ei õnnestunud — installin user/site pipiga ($(PYTHON) -m pip)"; \
+	  $(PYTHON) -m pip install -r requirements.txt; \
 	fi
 
 lint:
