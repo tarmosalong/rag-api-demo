@@ -34,3 +34,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t rag-api-demo:ci .
+
+  windows-install:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install.ps1 (Chroma without MSVC)
+        shell: pwsh
+        run: ./scripts/install.ps1
+      - name: pytest
+        shell: pwsh
+        env:
+          RAG_OFFLINE: "1"
+        run: .\.venv\Scripts\python.exe -m pytest -q

@@ -19,7 +19,9 @@ $lines | Set-Content $tempReq
 & $pip -m pip install -r $tempReq
 Remove-Item $tempReq
 
-if ($pyVer -eq "3.12") {
+$onWindows = ($IsWindows -or $env:OS -eq "Windows_NT")
+
+if ($onWindows -and $pyVer -eq "3.12") {
     Write-Host "Windows Python 3.12: using chroma-hnswlib 0.7.5 wheel (0.7.6 has no win wheel)."
     & $pip -m pip install "chroma-hnswlib==0.7.5"
     & $pip -m pip install "chromadb==0.5.23" --no-deps
