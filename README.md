@@ -14,11 +14,11 @@ No API key or billing required:
 cp .env.example .env   # leave XAI_API_KEY placeholder; set RAG_OFFLINE=1
 make install
 make seed-offline      # Chroma index with hash-based vectors (no network)
-make dev-offline       # http://127.0.0.1:8765/docs
+make dev-offline       # UI http://127.0.0.1:8765/ (OpenAPI: /docs)
 make test && make eval
 ```
 
-`POST /v1/ask` returns a structured **mock** response (`sources`, `usage`, `request_id`). Retrieval quality is not meaningful in offline mode; use live ingest only when you add xAI credits.
+`POST /v1/ask` with `RAG_OFFLINE=1` (default `RAG_OFFLINE_MODE=retrieve`) answers from your indexed docs via **keyword retrieval + extractive snippets** — no chat or embed API calls. Set `RAG_OFFLINE_MODE=mock` for the fixed contract-test string only.
 
 ## Quick demo (live xAI)
 

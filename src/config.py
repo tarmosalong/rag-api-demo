@@ -25,6 +25,17 @@ class Settings(BaseSettings):
     embed_batch_size: int = 32
     ingest_on_startup: bool = False
     rag_offline: bool = False
+    rag_offline_mode: str = "retrieve"
+
+    @field_validator("rag_offline_mode", mode="before")
+    @classmethod
+    def _normalize_offline_mode(cls, value: object) -> str:
+        if value is None:
+            return "retrieve"
+        mode = str(value).strip().lower()
+        if mode not in {"mock", "retrieve"}:
+            raise ValueError("RAG_OFFLINE_MODE must be 'mock' or 'retrieve'")
+        return mode
 
     @field_validator("rag_offline", mode="before")
     @classmethod

@@ -4,12 +4,14 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from src.chroma_store import index_ready
 from src.config import APP_VERSION, get_settings
 from src.ingest import ingest_directory, ingest_file
 from src.middleware import RequestIdMiddleware
-from src.rag import answer, get_stats, offline_rag_result
+from src.rag import answer, get_stats
 from src.schemas import (
     AskResponse,
     HealthResponse,
@@ -19,6 +21,8 @@ from src.schemas import (
 )
 
 logger = logging.getLogger(__name__)
+
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 
 @asynccontextmanager
@@ -73,16 +77,6 @@ def ask_question(body: QuestionRequest, request: Request) -> AskResponse:
             detail="Index is not ready. Run ingest first (make ingest).",
         )
 
-    if settings.rag_offline:
-        mock = offline_rag_result()
-        return AskResponse(
-            answer=mock.answer,
-            sources=mock.sources,
-            usage=mock.usage,
-            latency_ms=mock.latency_ms,
-            request_id=_request_id(request),
-        )
-
     try:
         result = answer(body.question, settings=settings)
     except RuntimeError as exc:
@@ -128,3 +122,12 @@ async def upload_document(
         chunk_count=chunk_count,
         source=dest.name,
     )
+
+
+@app.get("/", include_in_schema=False)
+def web_ui() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+if STATIC_DIR.is_dir():
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

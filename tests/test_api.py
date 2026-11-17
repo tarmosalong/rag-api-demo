@@ -34,6 +34,13 @@ def _seed_index() -> None:
     )
 
 
+def test_web_ui_root(client: TestClient) -> None:
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "rag-api-demo" in response.text
+    assert "/static/app.js" in response.text
+
+
 def test_stats_empty_index(client: TestClient) -> None:
     response = client.get("/v1/stats")
     assert response.status_code == 200

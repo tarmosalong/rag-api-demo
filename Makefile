@@ -40,7 +40,7 @@ seed-offline:
 	$(PY) -m src.ingest --rebuild --offline
 
 dev-offline:
-	@echo "RAG_OFFLINE=1 — mock answers, no xAI cost"
+	@echo "RAG_OFFLINE=1 — UI http://127.0.0.1:8765/ (no xAI cost)"
 	RAG_OFFLINE=1 $(PY) -m uvicorn src.main:app --host 0.0.0.0 --port 8765 --reload
 
 eval:
