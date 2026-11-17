@@ -26,6 +26,16 @@ class Settings(BaseSettings):
     ingest_on_startup: bool = False
     rag_offline: bool = False
     rag_offline_mode: str = "retrieve"
+    rag_auto_seed_offline: bool = True
+
+    @field_validator("rag_auto_seed_offline", mode="before")
+    @classmethod
+    def _coerce_auto_seed(cls, value: object) -> bool:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.strip().lower() in {"1", "true", "yes", "on"}
+        return bool(value)
 
     @field_validator("rag_offline_mode", mode="before")
     @classmethod

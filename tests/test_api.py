@@ -12,6 +12,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setenv("CHROMA_PATH", str(chroma))
     monkeypatch.setenv("EMBED_CACHE_PATH", str(cache))
     monkeypatch.setenv("RAG_OFFLINE", "1")
+    monkeypatch.setenv("RAG_AUTO_SEED_OFFLINE", "0")
     monkeypatch.setenv("XAI_API_KEY", "")
     get_settings.cache_clear()
     yield TestClient(app)
@@ -39,6 +40,29 @@ def test_web_ui_root(client: TestClient) -> None:
     assert response.status_code == 200
     assert "rag-api-demo" in response.text
     assert "/static/app.js" in response.text
+
+
+@pytest.fixture
+def client_autoseed(tmp_path, monkeypatch):
+    chroma = tmp_path / "chroma"
+    cache = tmp_path / "embed_cache.sqlite"
+    monkeypatch.setenv("CHROMA_PATH", str(chroma))
+    monkeypatch.setenv("EMBED_CACHE_PATH", str(cache))
+    monkeypatch.setenv("RAG_OFFLINE", "1")
+    monkeypatch.setenv("RAG_AUTO_SEED_OFFLINE", "1")
+    monkeypatch.setenv("XAI_API_KEY", "")
+    get_settings.cache_clear()
+    with TestClient(app) as test_client:
+        yield test_client
+    get_settings.cache_clear()
+
+
+def test_offline_lifespan_seeds_raw_corpus(client_autoseed: TestClient) -> None:
+    response = client_autoseed.get("/v1/stats")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["document_count"] >= 3
+    assert body["chunk_count"] >= 3
 
 
 def test_stats_empty_index(client: TestClient) -> None:

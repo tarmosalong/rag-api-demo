@@ -39,10 +39,23 @@
           </form>
         </section>
 
-        <aside class="detail" id="detail" hidden>
-          <h2>Sources</h2>
-          <ul id="sourceList"></ul>
-          <p class="footnote" id="metaFoot"></p>
+        <aside class="detail">
+          <section class="upload-panel" aria-label="Upload document">
+            <h2>Add document</h2>
+            <p class="hint">Plain text <code>.md</code> or <code>.txt</code>, up to 5&nbsp;MB.</p>
+            <input
+              type="file"
+              id="fileInput"
+              accept=".txt,.md,text/plain,text/markdown"
+            />
+            <button type="button" id="uploadBtn" class="upload-btn">Upload and index</button>
+            <p class="upload-status" id="uploadStatus" hidden></p>
+          </section>
+          <section id="sourcesSection" hidden>
+            <h2>Sources</h2>
+            <ul id="sourceList"></ul>
+            <p class="footnote" id="metaFoot"></p>
+          </section>
         </aside>
       </main>
     </div>

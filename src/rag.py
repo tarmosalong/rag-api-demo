@@ -201,7 +201,15 @@ def answer(question: str, settings: Settings | None = None) -> RagResult:
 
         documents, metadatas, distances = _retrieve_offline(question, s)
         sources = _sources_from_hits(documents, metadatas, distances)
-        text = compose_retrieve_only_answer(question, documents)
+        terms = _question_terms(question)
+        best_score = max((_keyword_score(doc or "", terms) for doc in documents), default=0.0)
+        if best_score <= 0:
+            text = (
+                "No strong keyword match in the indexed documents for this question. "
+                "Try rephrasing, or upload or add a .md/.txt file to data/raw and restart."
+            )
+        else:
+            text = compose_retrieve_only_answer(question, documents)
         latency_ms = (time.perf_counter() - started) * 1000
         return RagResult(
             answer=text,
