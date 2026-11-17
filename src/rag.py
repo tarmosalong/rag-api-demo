@@ -78,15 +78,13 @@ def _best_lines(text: str, terms: list[str]) -> list[tuple[float, str]]:
 
 def compose_retrieve_only_answer(question: str, documents: list[str]) -> str:
     terms = _question_terms(question)
-    candidates: list[tuple[float, str]] = []
     for doc in documents:
-        candidates.extend(_best_lines(doc or "", terms))
-
-    if candidates:
-        line = candidates[0][1]
-        line = re.sub(r"^[-*]\s+", "", line)
-        line = line.replace("**", "")
-        return line.strip()
+        doc_lines = _best_lines(doc or "", terms)
+        if doc_lines:
+            line = doc_lines[0][1]
+            line = re.sub(r"^[-*]\s+", "", line)
+            line = line.replace("**", "")
+            return line.strip()
 
     if documents and documents[0]:
         snippet = documents[0].strip()

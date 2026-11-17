@@ -69,7 +69,7 @@ General support: **support@ledgerlite.example**. Security reports:
 **security@ledgerlite.example** (PGP fingerprint published on the status page).
 Status incidents are posted at **status.ledgerlite.example**.
 
-## Sample facts for quick tests
+## Sample facts for demo questions
 
 - Product name: **LedgerLite**
 - Cheapest paid plan: **Starter** (nine EUR per user per month)
@@ -78,6 +78,5 @@ Status incidents are posted at **status.ledgerlite.example**.
 - API version: **v1**
 - Enterprise SLA uptime: **99.9%**
 
-Use questions such as “What does Growth cost?” or “How long is the trial?” after
-uploading this file through `/v1/upload` or placing it in `data/raw/` and re-running
-`make seed-offline`.
+Try questions like “What does Growth cost?” or “How long is the trial?” once this
+file is in the index (upload via `/v1/upload` or copy into `data/raw/` and ingest).
