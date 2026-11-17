@@ -62,6 +62,8 @@ If scripts are blocked, use `.cmd` wrappers (they bypass execution policy) or:
 
 Open http://127.0.0.1:8765/ (or set `$env:PORT='18765'` if Windows reports WinError 10013 on 8765). Tests: `$env:RAG_OFFLINE="1"; .\.venv\Scripts\python.exe -m pytest -q`
 
+**Windows:** If Chroma fails with `onnxruntime` / DLL errors, install [VC++ Redistributable x64](https://aka.ms/vs/17/release/vc_redist.x64.exe) (`winget install Microsoft.VCRedist.2015+.x64`). Default dev port on Windows is **18765** (8765 is often reserved).
+
 **Windows + Python 3.12:** PyPI has no `chroma-hnswlib==0.7.6` wheel, so `install.ps1` uses the **0.7.5** wheel then installs `chromadb` without building C++. Alternative: use **Python 3.11** (3.11 has a 0.7.6 wheel) or install [MSVC Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
 
 ## Architecture

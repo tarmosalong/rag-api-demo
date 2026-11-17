@@ -8,8 +8,19 @@ $env:RAG_OFFLINE = "1"
 if (-not $env:RAG_AUTO_SEED_OFFLINE) { $env:RAG_AUTO_SEED_OFFLINE = "true" }
 if (-not $env:RAG_OFFLINE_MODE) { $env:RAG_OFFLINE_MODE = "retrieve" }
 
-$port = if ($env:PORT) { $env:PORT } else { "8765" }
+$onWindows = ($IsWindows -or $env:OS -eq "Windows_NT")
+if ($env:PORT) {
+    $port = $env:PORT
+} elseif ($onWindows) {
+    $port = "18765"
+} else {
+    $port = "8765"
+}
+
+$reload = if ($env:UVICORN_RELOAD -eq "0") { @() } else { @("--reload") }
 
 Write-Host "RAG_OFFLINE=1 - UI http://127.0.0.1:$port/ (Ctrl+C to stop)"
-Write-Host "If WinError 10013 on port $port, try: `$env:PORT='18765'; .\scripts\dev-offline.cmd"
-& $py -m uvicorn src.main:app --host 127.0.0.1 --port $port --reload
+if ($port -eq "8765" -and $onWindows) {
+    Write-Host "If WinError 10013, set PORT=18765 (default on Windows is 18765)."
+}
+& $py -m uvicorn src.main:app --host 127.0.0.1 --port $port @reload

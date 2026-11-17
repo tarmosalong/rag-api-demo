@@ -30,7 +30,20 @@ if ($onWindows -and $pyVer -eq "3.12") {
     & $pip -m pip install "chromadb==0.5.23"
 }
 
-& $pip -c "import chromadb, uvicorn, fastapi; print('import smoke OK')"
+if ($onWindows) {
+    & $pip -m pip install --force-reinstall "onnxruntime==1.19.2"
+}
+
+& $pip -c "import onnxruntime; import chromadb, uvicorn, fastapi; print('import smoke OK')"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "onnxruntime/Chroma import failed (common on Windows without VC++ runtime)."
+    Write-Host "Install Microsoft Visual C++ 2015-2022 x64 Redistributable:"
+    Write-Host "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+    Write-Host "Or: winget install Microsoft.VCRedist.2015+.x64"
+    Write-Host "Then re-run: .\scripts\install.cmd"
+    exit 1
+}
 
 Write-Host "OK: .venv (Python $pyVer)"
 Write-Host "Start: .\scripts\dev-offline.ps1"
