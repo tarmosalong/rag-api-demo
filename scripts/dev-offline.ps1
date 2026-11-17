@@ -17,7 +17,13 @@ if ($env:PORT) {
     $port = "8765"
 }
 
-$reload = if ($env:UVICORN_RELOAD -eq "0") { @() } else { @("--reload") }
+if ($env:UVICORN_RELOAD -eq "1") {
+    $reload = @("--reload")
+} elseif ($onWindows) {
+    $reload = @()
+} else {
+    $reload = @("--reload")
+}
 
 Write-Host "RAG_OFFLINE=1 - UI http://127.0.0.1:$port/ (Ctrl+C to stop)"
 if ($port -eq "8765" -and $onWindows) {

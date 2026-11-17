@@ -1,5 +1,9 @@
 from pathlib import Path
 
+from src.runtime_bootstrap import prepare_runtime
+
+prepare_runtime()
+
 import chromadb
 from chromadb.api.models.Collection import Collection
 
