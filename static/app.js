@@ -1,7 +1,9 @@
 const SAMPLE_QUESTIONS = [
   "What is the project name?",
   "Which vector store is used?",
-  "How do you run offline tests?",
+  "What does the Growth plan cost?",
+  "How long is the trial?",
+  "Where is customer data stored?",
 ];
 
 const messagesEl = document.getElementById("messages");
@@ -11,9 +13,12 @@ const submitBtn = document.getElementById("submitBtn");
 const samplesEl = document.getElementById("samples");
 const indexPill = document.getElementById("indexPill");
 const statsMeta = document.getElementById("statsMeta");
-const detail = document.getElementById("detail");
+const sourcesSection = document.getElementById("sourcesSection");
 const sourceList = document.getElementById("sourceList");
 const metaFoot = document.getElementById("metaFoot");
+const fileInput = document.getElementById("fileInput");
+const uploadBtn = document.getElementById("uploadBtn");
+const uploadStatus = document.getElementById("uploadStatus");
 
 function addBubble(text, role) {
   const el = document.createElement("div");
@@ -48,7 +53,7 @@ async function refreshStatus() {
     indexPill.classList.toggle("warn", !ready);
     statsMeta.textContent = ready
       ? `${stats.document_count} docs · ${stats.chunk_count} chunks · v${health.version}`
-      : "Run make seed-offline or make ingest";
+      : "Indexing data/raw on startup when RAG_OFFLINE=1";
   } catch {
     indexPill.textContent = "API: unreachable";
     indexPill.classList.add("warn");
@@ -59,10 +64,10 @@ async function refreshStatus() {
 function renderSources(sources, usage, latencyMs, requestId) {
   sourceList.innerHTML = "";
   if (!sources || sources.length === 0) {
-    detail.hidden = true;
+    sourcesSection.hidden = true;
     return;
   }
-  detail.hidden = false;
+  sourcesSection.hidden = false;
   sources.forEach((s) => {
     const li = document.createElement("li");
     li.innerHTML = `<span class="src-name">${escapeHtml(s.source)} · score ${s.score}</span>
@@ -79,6 +84,12 @@ function escapeHtml(str) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
+}
+
+function setUploadStatus(message, isError = false) {
+  uploadStatus.hidden = !message;
+  uploadStatus.textContent = message || "";
+  uploadStatus.classList.toggle("error", isError);
 }
 
 askForm.addEventListener("submit", async (event) => {
@@ -104,24 +115,61 @@ askForm.addEventListener("submit", async (event) => {
     if (!response.ok) {
       const msg = body.detail || `Request failed (${response.status})`;
       addBubble(msg, "error");
-      detail.hidden = true;
+      sourcesSection.hidden = true;
       return;
     }
 
     addBubble(body.answer, "assistant");
     renderSources(body.sources, body.usage, body.latency_ms, body.request_id);
+    await refreshStatus();
   } catch (err) {
     pending.remove();
     addBubble(err.message || "Network error", "error");
-    detail.hidden = true;
+    sourcesSection.hidden = true;
   } finally {
     submitBtn.disabled = false;
     questionInput.focus();
   }
 });
 
+uploadBtn.addEventListener("click", async () => {
+  const file = fileInput.files?.[0];
+  if (!file) {
+    setUploadStatus("Choose a .md or .txt file first.", true);
+    return;
+  }
+
+  uploadBtn.disabled = true;
+  setUploadStatus("Uploading…");
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch("/v1/upload", { method: "POST", body: formData });
+    const body = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setUploadStatus(body.detail || `Upload failed (${response.status})`, true);
+      return;
+    }
+
+    setUploadStatus(`Indexed ${body.source} (${body.chunk_count} chunks).`);
+    fileInput.value = "";
+    addBubble(
+      `Added ${body.source} to the index (${body.chunk_count} chunks). You can ask about it now.`,
+      "muted",
+    );
+    await refreshStatus();
+  } catch (err) {
+    setUploadStatus(err.message || "Upload failed", true);
+  } finally {
+    uploadBtn.disabled = false;
+  }
+});
+
 addBubble(
-  "Welcome. Ask a question about the documents in the index. Use the chips below for examples.",
+  "Welcome. Ask about documents in the index, or upload a .md/.txt file on the right.",
   "muted",
 );
 renderSamples();

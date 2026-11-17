@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from src.chroma_store import index_ready
+from src.chroma_store import index_ready, index_stats
 from src.config import APP_VERSION, get_settings
 from src.ingest import ingest_directory, ingest_file
 from src.middleware import RequestIdMiddleware
@@ -25,10 +25,34 @@ logger = logging.getLogger(__name__)
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 
+def _raw_corpus_file_count(settings) -> int:
+    raw = settings.raw_dir
+    if not raw.is_dir():
+        return 0
+    return len(list(raw.glob("*.md")) + list(raw.glob("*.txt")))
+
+
+def _should_seed_offline_index(settings) -> bool:
+    if not settings.rag_offline:
+        return False
+    if not index_ready(settings):
+        return True
+    indexed_docs, _ = index_stats(settings)
+    return indexed_docs < _raw_corpus_file_count(settings)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
-    if settings.ingest_on_startup and not index_ready(settings):
+    if settings.rag_auto_seed_offline and _should_seed_offline_index(settings):
+        raw_n = _raw_corpus_file_count(settings)
+        logger.info("RAG_OFFLINE: building index from data/raw (%s files)", raw_n)
+        ingest_directory(
+            settings=settings,
+            rebuild=True,
+            use_offline_embeddings=True,
+        )
+    elif settings.ingest_on_startup and not index_ready(settings):
         logger.info("INGEST_ON_STARTUP: running ingest")
         ingest_directory(settings=settings, rebuild=False)
     yield
@@ -113,7 +137,11 @@ async def upload_document(
     dest.write_bytes(data)
 
     try:
-        chunk_count = ingest_file(dest, settings=settings)
+        chunk_count = ingest_file(
+            dest,
+            settings=settings,
+            use_offline_embeddings=settings.rag_offline,
+        )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Ingest failed: {exc}") from exc
 
