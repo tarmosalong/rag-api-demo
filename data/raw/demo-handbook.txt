@@ -1,10 +1,10 @@
-rag-api-demo — lühike käsiraamat (demo korpus)
+rag-api-demo — short handbook (demo corpus)
 
-INGEST_ON_STARTUP vaikimisi on false. Enne esimest küsimust käivita ingest käsitsi (make ingest).
+INGEST_ON_STARTUP defaults to false. Run ingest manually before the first question (make ingest).
 
-Ühe ask päringu xAI kulu: üks küsimuse embedding ja üks chat completion.
-Embed-cache kehtib ainult dokumentide chunkide ingestil, mitte korduvate küsimuste embedile.
+Cost per ask: one question embedding plus one chat completion.
+The embed cache applies only to ingest chunks, not repeated question embeddings.
 
-Offline testimiseks: RAG_OFFLINE=1 (pytest ja make test).
+Offline testing: RAG_OFFLINE=1 (pytest and make test).
 
 Demo port: 8765.
