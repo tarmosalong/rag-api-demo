@@ -4,7 +4,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_expected_directories_exist() -> None:
-    for name in ("src", "docs", "data/raw", "tests", "scripts", ".github/workflows"):
+    for name in ("src", "static", "docs", "data/raw", "tests", "scripts", ".github/workflows"):
         assert (ROOT / name).is_dir(), f"missing {name}"
 
 

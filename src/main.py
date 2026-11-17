@@ -4,6 +4,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from src.chroma_store import index_ready
 from src.config import APP_VERSION, get_settings
@@ -19,6 +21,8 @@ from src.schemas import (
 )
 
 logger = logging.getLogger(__name__)
+
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 
 @asynccontextmanager
@@ -118,3 +122,12 @@ async def upload_document(
         chunk_count=chunk_count,
         source=dest.name,
     )
+
+
+@app.get("/", include_in_schema=False)
+def web_ui() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+if STATIC_DIR.is_dir():
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

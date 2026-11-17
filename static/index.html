@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>rag-api-demo</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="top">
+        <div class="brand">
+          <h1>rag-api-demo</h1>
+          <p class="tagline">Ask questions over your local document index.</p>
+        </div>
+        <div class="status" id="statusPanel" aria-live="polite">
+          <span class="pill" id="indexPill">Index: …</span>
+          <span class="meta" id="statsMeta"></span>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="chat" aria-label="Chat">
+          <div id="messages" class="messages"></div>
+
+          <form id="askForm" class="composer">
+            <label class="sr-only" for="question">Question</label>
+            <textarea
+              id="question"
+              name="question"
+              rows="2"
+              placeholder="e.g. What is the project name?"
+              required
+            ></textarea>
+            <div class="composer-actions">
+              <div class="samples" id="samples"></div>
+              <button type="submit" id="submitBtn">Ask</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="detail" id="detail" hidden>
+          <h2>Sources</h2>
+          <ul id="sourceList"></ul>
+          <p class="footnote" id="metaFoot"></p>
+        </aside>
+      </main>
+    </div>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

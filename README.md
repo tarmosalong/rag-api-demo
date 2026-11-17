@@ -14,7 +14,7 @@ No API key or billing required:
 cp .env.example .env   # leave XAI_API_KEY placeholder; set RAG_OFFLINE=1
 make install
 make seed-offline      # Chroma index with hash-based vectors (no network)
-make dev-offline       # http://127.0.0.1:8765/docs
+make dev-offline       # UI http://127.0.0.1:8765/ (OpenAPI: /docs)
 make test && make eval
 ```
 
