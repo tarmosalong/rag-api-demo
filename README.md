@@ -1,5 +1,7 @@
 # rag-api-demo
 
+<img width="998" height="961" alt="image" src="https://github.com/user-attachments/assets/133b70e0-134e-4f56-8108-779fb8055ad4" />
+
 A small **retrieval-augmented generation (RAG) HTTP API** and browser UI: ingest Markdown/text into **Chroma**, answer questions with **citations**, token **usage**, and request **latency**. Live mode uses **xAI Grok** (OpenAI-compatible embeddings + chat). **Offline mode** runs with zero API spend for local dev, tests, and CI.
 
 [![CI](https://github.com/tarmosalong/rag-api-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/tarmosalong/rag-api-demo/actions/workflows/ci.yml)
